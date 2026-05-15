@@ -2,11 +2,12 @@ package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.UserApi;
 import com.sprint.mission.discodeit.dto.data.UserDto;
-import com.sprint.mission.discodeit.dto.data.UserStatusDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
+import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import java.io.IOException;
@@ -38,24 +39,24 @@ public class UserController implements UserApi {
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Override
-  public ResponseEntity<UserDto> create(
+  public ResponseEntity<User> create(
       @RequestPart UserCreateRequest userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile) {
     Optional<BinaryContentCreateRequest> profileCreateRequest = Optional.ofNullable(profile)
         .map(this::resolveProfileRequest);
-    UserDto user = userService.create(userCreateRequest, profileCreateRequest);
+    User user = userService.create(userCreateRequest, profileCreateRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
   @PatchMapping(path = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Override
-  public ResponseEntity<UserDto> update(
+  public ResponseEntity<User> update(
       @PathVariable UUID userId,
       @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile) {
     Optional<BinaryContentCreateRequest> profileCreateRequest = Optional.ofNullable(profile)
         .map(this::resolveProfileRequest);
-    UserDto user = userService.update(userId, userUpdateRequest, profileCreateRequest);
+    User user = userService.update(userId, userUpdateRequest, profileCreateRequest);
     return ResponseEntity.ok(user);
   }
 
@@ -75,10 +76,10 @@ public class UserController implements UserApi {
 
   @PatchMapping("/{userId}/userStatus")
   @Override
-  public ResponseEntity<UserStatusDto> updateStatus(
+  public ResponseEntity<UserStatus> updateStatus(
       @PathVariable UUID userId,
       @RequestBody UserStatusUpdateRequest request) {
-    UserStatusDto userStatus = userStatusService.updateByUserId(userId, request);
+    UserStatus userStatus = userStatusService.updateByUserId(userId, request);
     return ResponseEntity.ok(userStatus);
   }
 
